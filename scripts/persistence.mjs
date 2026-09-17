@@ -42,6 +42,12 @@ function fixture(name) {
     fs.cpSync(path.join(source, item), path.join(dir, item), {
       recursive: true,
     });
+  // A relocated source checkout still needs its runtime dependencies.
+  fs.symlinkSync(
+    path.join(source, 'node_modules'),
+    path.join(dir, 'node_modules'),
+    process.platform === 'win32' ? 'junction' : 'dir',
+  );
   write(path.join(dir, 'package.json'), {
     name: 'pomodoro-desktop',
     version: '0.1.0',
@@ -71,8 +77,9 @@ async function launch(dir, appData = fakeAppData, override) {
     args: [dir],
     env,
     cwd: dir,
+    timeout: 30000,
   });
-  const page = await app.firstWindow();
+  const page = await app.firstWindow({ timeout: 30000 });
   page.on('pageerror', (error) => errors.push(error.message));
   await page.locator('.time').waitFor();
   const userData = await app.evaluate(({ app }) => app.getPath('userData'));
