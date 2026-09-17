@@ -2,6 +2,8 @@
 
 Минималистичный таймер для Windows и macOS на **Electron + React + TypeScript**.
 
+![img.png](./assets/preview.png)
+
 ## Что работает в версии 0.2.3
 
 - Круговой таймер: работа, короткий и длинный перерывы.
