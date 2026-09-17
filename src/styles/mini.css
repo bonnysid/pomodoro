@@ -1,0 +1,51 @@
+.compact {
+  border-radius: 10px;
+}
+.mini-layout {
+  height: 100%;
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 15px 10px 9px;
+  -webkit-app-region: drag;
+}
+.mini-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mini-tools .icon-button {
+  width: 28px;
+  height: 27px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+}
+.mini-timer {
+  flex: 1;
+  min-width: 0;
+}
+.mini-timer > span {
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.mini-timer > small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-top: 5px;
+}
+.mini-layout .play-button {
+  width: 43px;
+  height: 43px;
+  box-shadow: none;
+}
+.mini-layout .play-button svg {
+  width: 19px;
+}

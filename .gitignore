@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+release/
+.DS_Store
+*.log
+test-results/
+.idea/
+.env
+.env.*
+*.p12
+*.pfx
+*.pem
+*.key

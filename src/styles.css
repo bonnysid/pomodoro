@@ -1,0 +1,11 @@
+@import "./styles/tokens.css";
+@import "./styles/base.css";
+@import "./styles/shell.css";
+@import "./styles/timer.css";
+@import "./styles/status.css";
+@import "./styles/mini.css";
+@import "./styles/modal.css";
+@import "./styles/settings.css";
+@import "./styles/sounds.css";
+@import "./styles/statistics.css";
+@import "./styles/responsive.css";
