@@ -21,3 +21,4 @@ jobs:
       - run: npm test
       - run: npm run test:persistence
       - run: npm run test:new-day
+      - run: npm run test:completion-window

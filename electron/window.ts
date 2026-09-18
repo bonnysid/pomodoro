@@ -8,6 +8,7 @@ export class AppWindow {
   compact = false;
   quitting = false;
   private normalBounds: Rectangle | null = null;
+  private completionTimer: ReturnType<typeof setTimeout> | undefined;
   constructor(
     private readonly options: {
       appPath: string;
@@ -61,24 +62,53 @@ export class AppWindow {
       }
     });
     win.on('closed', () => {
+      clearTimeout(this.completionTimer);
+      this.completionTimer = undefined;
       this.window = null;
       this.compact = false;
       if (!this.quitting) app.quit();
     });
+    win.on('hide', () => this.clearCompletionAttention());
+    win.on('minimize', () => this.clearCompletionAttention());
     void win.loadURL(this.options.devUrl || 'pomodoro://app/index.html');
   }
   show = () => {
     if (!this.window || this.window.isDestroyed()) this.create();
+    if (this.window?.isMinimized()) this.window.restore();
     this.window?.show();
-    this.window?.restore();
     this.window?.focus();
   };
+  showOnCompletion() {
+    const win = this.window;
+    if (this.quitting || !this.options.settings().showOnCompletion || !win || win.isDestroyed())
+      return;
+    clearTimeout(this.completionTimer);
+    // Briefly raise the window, then restore the user's separate pin preference.
+    this.completionTimer = setTimeout(() => this.clearCompletionAttention(), 2000);
+    this.completionTimer.unref();
+    this.applySettings();
+    this.show();
+    win.moveTop();
+    if (process.platform === 'darwin') app.focus({ steal: true });
+    win.focus();
+  }
+  private clearCompletionAttention() {
+    clearTimeout(this.completionTimer);
+    this.completionTimer = undefined;
+    this.applySettings();
+  }
   send(channel: string, value: unknown) {
     if (this.window && !this.window.isDestroyed()) this.window.webContents.send(channel, value);
   }
   applySettings() {
-    const pinned = this.options.settings().alwaysOnTop;
-    if (this.window && this.window.isAlwaysOnTop() !== pinned) this.window.setAlwaysOnTop(pinned);
+    const settings = this.options.settings();
+    if (!settings.showOnCompletion && this.completionTimer) {
+      clearTimeout(this.completionTimer);
+      this.completionTimer = undefined;
+    }
+    const pinned = settings.alwaysOnTop || this.completionTimer !== undefined;
+    if (this.window && !this.window.isDestroyed() && this.window.isAlwaysOnTop() !== pinned)
+      this.window.setAlwaysOnTop(pinned);
   }
   action(action: WindowAction) {
     if (action === 'minimize') this.window?.minimize();

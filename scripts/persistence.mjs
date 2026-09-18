@@ -27,6 +27,7 @@ const custom = {
   volume: 0.37,
   minimizeToTray: false,
   alwaysOnTop: true,
+  showOnCompletion: false,
   ambience: 'brown',
   ambientVolume: 0.23,
 };

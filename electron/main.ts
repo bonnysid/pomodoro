@@ -91,6 +91,7 @@ async function start() {
   controller.onState(broadcast);
   updates.onState(broadcast);
   controller.onComplete((event) => {
+    desktop.showOnCompletion();
     if (!testMode) notifyCompletion(event, controller.state.settings, appPath, desktop.show);
     desktop.send(channels.complete, event);
   });

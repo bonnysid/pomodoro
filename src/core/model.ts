@@ -14,6 +14,7 @@ export interface Settings {
   volume: number;
   minimizeToTray: boolean;
   alwaysOnTop: boolean;
+  showOnCompletion: boolean;
   ambience: 'none' | 'white' | 'brown';
   ambientVolume: number;
 }
@@ -70,6 +71,7 @@ export function defaultSettings(language: Language = 'ru'): Settings {
     volume: 0.5,
     minimizeToTray: true,
     alwaysOnTop: false,
+    showOnCompletion: true,
     ambience: 'none',
     ambientVolume: 0.15,
   };
@@ -95,6 +97,7 @@ export function normalizeSettings(value: unknown, base = defaultSettings()): Set
     sound: bool('sound'),
     minimizeToTray: bool('minimizeToTray'),
     alwaysOnTop: bool('alwaysOnTop'),
+    showOnCompletion: bool('showOnCompletion'),
     volume: numberIn(v.volume, base.volume, 0, 1),
     ambientVolume: numberIn(v.ambientVolume, base.ambientVolume, 0, 1),
     ambience:

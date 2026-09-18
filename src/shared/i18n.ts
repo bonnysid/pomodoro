@@ -2,6 +2,8 @@ import type { Language, Phase } from '../core/model';
 
 export const messages = {
   ru: {
+    showOnCompletion: 'Показывать окно по завершении',
+    showOnCompletionHint: 'После фокуса или перерыва окно появится поверх остальных, даже из трея.',
     updates: 'Обновления',
     checkUpdates: 'Проверить обновления',
     downloadUpdate: 'Скачать обновление',
@@ -114,6 +116,9 @@ export const messages = {
     notificationBlocked: 'Уведомления отключены в настройках браузера.',
   },
   en: {
+    showOnCompletion: 'Show window when timer ends',
+    showOnCompletionHint:
+      'Bring the window to the front after focus or a break, even from the tray.',
     updates: 'Updates',
     checkUpdates: 'Check for updates',
     downloadUpdate: 'Download update',

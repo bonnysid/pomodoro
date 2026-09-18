@@ -173,6 +173,12 @@ export function SettingsPanel({
           checked={settings.notifications}
           onChange={(v) => update({ notifications: v })}
         />
+        <Toggle
+          label={t.showOnCompletion}
+          checked={settings.showOnCompletion}
+          onChange={(v) => update({ showOnCompletion: v })}
+        />
+        <p className="field-hint">{t.showOnCompletionHint}</p>
         <Toggle label={t.sound} checked={settings.sound} onChange={(v) => update({ sound: v })} />
       </section>
       <p className="saved-note">
