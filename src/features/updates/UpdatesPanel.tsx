@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import type { UpdateAction, UpdateState } from '../../core/updates';
 import type { Messages } from '../../shared/i18n';
+import { releaseNotesText } from './release-notes';
 
 export function UpdatesPanel({
   state,
@@ -12,6 +14,7 @@ export function UpdatesPanel({
   onAction: (action: UpdateAction) => void;
   t: Messages;
 }) {
+  const notes = useMemo(() => releaseNotesText(state.notes), [state.notes]);
   const statusText =
     state.status === 'disabled'
       ? state.unavailableReason === 'mac-signing'
@@ -42,10 +45,10 @@ export function UpdatesPanel({
       {state.status === 'downloading' && (
         <progress aria-label={t.updateDownloading} value={state.progress} max={100} />
       )}
-      {state.notes && (
+      {notes && (
         <details className="update-notes">
           <summary>{t.whatsNew}</summary>
-          <p>{state.notes}</p>
+          <p>{notes}</p>
         </details>
       )}
       {state.problem && state.problem !== 'check' && (

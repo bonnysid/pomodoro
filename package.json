@@ -1,7 +1,7 @@
 {
   "name": "pomodoro-desktop",
   "productName": "Pomodoro",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A quiet, bilingual Pomodoro timer for Windows and macOS",
   "author": "Pomodoro",
   "private": true,
@@ -29,7 +29,8 @@
     "check:ci": "biome ci . --error-on-warnings",
     "verify": "npm run check && npm run typecheck && npm test",
     "test:new-day": "node scripts/new-day.mjs",
-    "test:completion-window": "node scripts/completion-window.mjs"
+    "test:completion-window": "node scripts/completion-window.mjs",
+    "test:release-notes": "node scripts/release-notes.mjs"
   },
   "dependencies": {
     "electron-updater": "6.8.9",
