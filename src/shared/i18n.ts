@@ -11,7 +11,9 @@ export const messages = {
     updateChecking: 'Проверяем обновления…',
     updateCurrent: 'Установлена последняя версия.',
     updateAvailable: 'Доступна версия',
-    updateDownloading: 'Скачиваем…',
+    updateDownloading: 'Скачиваем в фоне…',
+    updateBackgroundHint:
+      'Можно закрыть настройки и продолжать работать. Перезапуск — по твоему выбору.',
     updateReady: 'Готова к установке версия',
     updateInstalling: 'Перезапускаем приложение…',
     updateCheckError: 'Не удалось проверить обновления. Проверь интернет и попробуй ещё раз.',
@@ -22,8 +24,9 @@ export const messages = {
     updatePauseFirst:
       'Поставь таймер на паузу перед установкой. Статистика и настройки сохранятся.',
     updateLaterHint:
-      'Можно закрыть настройки и установить позже. Статистика и настройки сохранятся.',
-    updatesHint: 'Проверяем новые версии при запуске. Скачивание и перезапуск — по твоему выбору.',
+      'Приложение обновится без мастера установки и откроется снова. Статистика и настройки сохранятся.',
+    updatesHint:
+      'Проверяем новые версии при запуске и скачиваем в фоне. Перезапуск — по твоему выбору.',
     updatesInstalledOnly: 'Обновления доступны в установленной версии приложения.',
     updatesMacSigning: 'Автообновления macOS появятся в подписанной сборке.',
     whatsNew: 'Что нового',
@@ -126,7 +129,8 @@ export const messages = {
     updateChecking: 'Checking for updates…',
     updateCurrent: 'You are up to date.',
     updateAvailable: 'Available version',
-    updateDownloading: 'Downloading…',
+    updateDownloading: 'Downloading in the background…',
+    updateBackgroundHint: 'You can close settings and keep working. Restart when you are ready.',
     updateReady: 'Ready to install version',
     updateInstalling: 'Restarting the app…',
     updateCheckError: 'Could not check for updates. Check your connection and try again.',
@@ -136,8 +140,9 @@ export const messages = {
     updateInstallError: 'Could not start the installer. Please try again.',
     updatePauseFirst: 'Pause the timer before installing. Statistics and settings will be kept.',
     updateLaterHint:
-      'You can close settings and install later. Statistics and settings will be kept.',
-    updatesHint: 'New versions are checked at startup. You choose when to download and restart.',
+      'The app will update without a setup wizard and reopen. Statistics and settings will be kept.',
+    updatesHint:
+      'New versions are checked at startup and downloaded in the background. You choose when to restart.',
     updatesInstalledOnly: 'Updates are available in the installed desktop app.',
     updatesMacSigning: 'macOS auto-updates will be available in a signed build.',
     whatsNew: 'What’s new',

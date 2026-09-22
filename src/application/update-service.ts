@@ -9,6 +9,7 @@ export interface UpdateDriver {
 /** Update orchestration is independent of Electron; installation requires a saved, stopped timer. */
 export class UpdateService {
   state: UpdateState;
+  private checking = false;
   private readonly listeners = new Set<() => void>();
   constructor(
     private readonly driver: UpdateDriver | null,
@@ -52,7 +53,9 @@ export class UpdateService {
   async dispatch(action: UpdateAction) {
     if (!this.driver) return;
     if (action === 'check') {
-      if (!['idle', 'current', 'available', 'error'].includes(this.state.status)) return;
+      if (this.checking || !['idle', 'current', 'available', 'error'].includes(this.state.status))
+        return;
+      this.checking = true;
       this.change({
         status: 'checking',
         problem: null,
@@ -64,7 +67,12 @@ export class UpdateService {
         await this.driver.check();
       } catch {
         this.change({ status: 'error', problem: 'check' });
+        return;
+      } finally {
+        this.checking = false;
       }
+      // Download once the check has completed; only the user can request installation.
+      if (this.state.status === 'available') await this.dispatch('download');
     } else if (action === 'download') {
       if (this.state.status !== 'available') return;
       this.change({ status: 'downloading', problem: null, progress: 0 });

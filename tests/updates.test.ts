@@ -56,7 +56,7 @@ test('disabled preview never checks, downloads or installs', async () => {
   for (const action of ['check', 'download', 'install'] as const) await service.dispatch(action);
   assert.equal(service.state.status, 'disabled');
 });
-test('checking never downloads automatically and concurrent checks are ignored', async () => {
+test('concurrent checks are ignored and late discovery remains downloadable', async () => {
   const f = fixture();
   await Promise.all([f.service.dispatch('check'), f.service.dispatch('check')]);
   assert.deepEqual(f.calls, ['check']);
@@ -64,6 +64,47 @@ test('checking never downloads automatically and concurrent checks are ignored',
   assert.equal(f.service.state.status, 'available');
   assert.deepEqual(f.calls, ['check']);
   assert.equal(f.service.state.availableVersion, '0.2.4');
+});
+
+test('a successful check downloads in the background once, without pausing or installing', async () => {
+  const f = fixture();
+  f.running(true);
+  f.driver.check = async () => {
+    f.calls.push('check');
+    f.service.available('0.2.6', '<p>Changes</p>');
+  };
+  f.driver.download = async () => {
+    f.calls.push('download');
+    f.service.progress(42);
+    assert.equal(f.service.state.status, 'downloading');
+    assert.equal(f.service.state.progress, 42);
+    await f.service.dispatch('download');
+    f.service.downloaded();
+  };
+  await Promise.all([f.service.dispatch('check'), f.service.dispatch('check')]);
+  assert.equal(f.service.state.status, 'downloaded');
+  assert.deepEqual(f.calls, ['check', 'download']);
+  await f.service.dispatch('install');
+  assert.deepEqual(f.calls, ['check', 'download']);
+  f.running(false);
+  await f.service.dispatch('install');
+  assert.deepEqual(f.calls, ['check', 'download', 'save', 'install']);
+});
+
+test('a failed background download can be retried without rechecking or auto-installing', async () => {
+  const f = fixture();
+  f.driver.check = async () => f.service.available('0.2.6', 'Changes');
+  f.driver.download = async () => {
+    throw new Error('Offline');
+  };
+  await f.service.dispatch('check');
+  assert.equal(f.service.state.status, 'available');
+  assert.equal(f.service.state.problem, 'download');
+  f.driver.download = async () => f.service.downloaded();
+  await f.service.dispatch('download');
+  assert.equal(f.service.state.status, 'downloaded');
+  assert.equal(f.service.state.problem, null);
+  assert.deepEqual(f.calls, []);
 });
 test('current status requires a successful response; a failed check can be retried', async () => {
   const f = fixture();

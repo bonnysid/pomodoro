@@ -30,7 +30,8 @@ export function createUpdates(options: {
     install: () => {
       options.setQuitting(true);
       try {
-        autoUpdater.quitAndInstall(false, true);
+        // electron-updater 6.x: silent installation, then launch the updated app.
+        autoUpdater.quitAndInstall(true, true);
       } catch (error) {
         options.setQuitting(false);
         throw error;

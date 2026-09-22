@@ -1,11 +1,11 @@
-Pomodoro 0.2.5
+Pomodoro 0.2.6
 
-• Исправлено отображение раздела «Что нового»: HTML-теги больше не видны, абзацы, переносы строк и пункты списка сохраняются.
-• Настройки и статистика сохраняются при обновлении.
+• Windows: новые версии скачиваются в фоне. Продолжай работать и нажми «Перезапустить и обновить», когда будет удобно.
+• Обновление устанавливается без мастера и кнопок «Далее», после чего приложение открывается снова.
+• Перед установкой сохраняются настройки и статистика. Работающий таймер нужно поставить на паузу.
+• Раздел «Что нового» отображается без HTML-тегов (исправлено в 0.2.5).
 
-Исправление отображения начнёт работать после установки 0.2.5.
-
-Windows: обновление доступно из настроек версии 0.2.3 и новее. Для 0.2.2 и старше нужна ручная установка.
+При переходе с 0.2.5 или старше мастер появится ещё один раз — его запускает старая версия. Следующие обновления из 0.2.6 будут тихими.
 macOS: текущая сборка без подписи Apple, обновление вручную.
 
-English: Fixed visible HTML tags in “What's new”. Paragraphs, line breaks and list items are preserved. The display fix takes effect after installing 0.2.5; settings and statistics are retained.
+English: Updates download in the background on Windows. Choose “Restart and update” to install silently and reopen the app. Pause the timer first; settings and statistics are saved. Updating from 0.2.5 or earlier still shows the old setup wizard once. Subsequent updates from 0.2.6 use silent installation.

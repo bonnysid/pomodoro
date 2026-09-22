@@ -43,7 +43,10 @@ export function UpdatesPanel({
         {statusText}
       </p>
       {state.status === 'downloading' && (
-        <progress aria-label={t.updateDownloading} value={state.progress} max={100} />
+        <>
+          <progress aria-label={t.updateDownloading} value={state.progress} max={100} />
+          <p className="field-hint">{t.updateBackgroundHint}</p>
+        </>
       )}
       {notes && (
         <details className="update-notes">
