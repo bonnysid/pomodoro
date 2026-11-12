@@ -63,7 +63,15 @@ try {
         exact: true,
       });
       assert.equal(await toggle.isChecked(), true);
-      await toggle.uncheck();
+      await toggle.click();
+      // Settings return over IPC; wait for the controlled checkbox to reflect the save.
+      await page.waitForFunction(() =>
+        [...document.querySelectorAll('input[role="switch"]')].some(
+          (input) =>
+            input.closest('label')?.textContent?.includes('Показывать окно по завершении') &&
+            !input.checked,
+        ),
+      );
       await page.getByRole('dialog').getByRole('button', { name: 'Закрыть', exact: true }).click();
       await app.close();
       app = await electron.launch({
