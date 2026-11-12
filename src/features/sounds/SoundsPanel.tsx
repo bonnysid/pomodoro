@@ -1,7 +1,9 @@
 import { Moon, Music2, Play, Square, Volume2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { Ambience, Settings } from '../../core/model';
+import { getAPI } from '../../services/api';
 import { audio } from '../../services/audio';
+import type { MusicTrack } from '../../shared/contracts';
 import type { Messages } from '../../shared/i18n';
 import { Toggle } from '../../shared/ui/Toggle';
 
@@ -10,12 +12,30 @@ export function SoundsPanel({
   settings,
   update,
   t,
+  minecraftTracks,
 }: {
   settings: Settings;
   update: UpdateSettings;
   t: Messages;
+  minecraftTracks: MusicTrack[];
 }) {
   const [preview, setPreview] = useState<Ambience | null>(null);
+  const [connecting, setConnecting] = useState(false);
+  const [libraryError, setLibraryError] = useState(false);
+  const [musicError, setMusicError] = useState(false);
+  useEffect(() => audio.onMusicError(setMusicError), []);
+  const connectMusic = async (action: 'connect' | 'disconnect') => {
+    setConnecting(true);
+    setLibraryError(false);
+    audio.stopPreview();
+    try {
+      await getAPI().music(action);
+    } catch {
+      setLibraryError(true);
+    } finally {
+      setConnecting(false);
+    }
+  };
   useEffect(() => {
     const unsubscribe = audio.onPreview(setPreview);
     return () => {
@@ -26,12 +46,13 @@ export function SoundsPanel({
   return (
     <>
       <div className="sound-options">
-        {(['none', 'white', 'brown', 'lofi', 'worlds'] as const).map((kind) => (
+        {(['none', 'white', 'brown', 'lofi', 'worlds', 'minecraft'] as const).map((kind) => (
           <div className="sound-option" key={kind}>
             <button
               type="button"
               className={settings.ambience === kind ? 'selected' : ''}
               aria-pressed={settings.ambience === kind}
+              disabled={kind === 'minecraft' && !minecraftTracks.length}
               onClick={() => {
                 audio.stopPreview();
                 update({ ambience: kind });
@@ -49,6 +70,7 @@ export function SoundsPanel({
                 className="sound-preview"
                 aria-label={`${preview === kind ? t.stopPreview : t.previewAmbience}: ${t[kind]}`}
                 aria-pressed={preview === kind}
+                disabled={kind === 'minecraft' && !minecraftTracks.length}
                 onClick={() => {
                   if (preview === kind) audio.stopPreview();
                   else void audio.preview(kind, settings);
@@ -59,6 +81,36 @@ export function SoundsPanel({
             )}
           </div>
         ))}
+      </div>
+      <div className="minecraft-library">
+        <p className="field-hint">
+          {minecraftTracks.length
+            ? `${t.minecraftConnected}: ${minecraftTracks.length} · ${t.minecraftLoop}`
+            : t.minecraftHint}
+        </p>
+        {minecraftTracks.length > 0 && (
+          <details>
+            <summary>{t.minecraftTrackList}</summary>
+            <p className="field-hint">{minecraftTracks.map((track) => track.title).join(' · ')}</p>
+          </details>
+        )}
+        <button
+          className="secondary-button"
+          type="button"
+          disabled={connecting}
+          onClick={() => void connectMusic(minecraftTracks.length ? 'disconnect' : 'connect')}
+        >
+          {connecting
+            ? t.minecraftConnecting
+            : minecraftTracks.length
+              ? t.minecraftDisconnect
+              : t.minecraftConnect}
+        </button>
+        {(libraryError || musicError) && (
+          <p className="field-hint error" role="alert">
+            {t.minecraftError}
+          </p>
+        )}
       </div>
       <p className="field-hint">{t.ambienceHint}</p>
       <p className="field-hint">{t.originalMusicHint}</p>

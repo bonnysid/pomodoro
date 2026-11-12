@@ -90,6 +90,7 @@ export function usePomodoro() {
     document.documentElement.lang = snapshot.settings.language;
     document.documentElement.dataset.theme = snapshot.settings.theme;
     document.title = `${formatTime(snapshot.timer.remainingMs)} · Pomodoro`;
+    audio.setMinecraftTracks(snapshot.minecraftTracks);
     audio.ambience(
       snapshot.settings,
       snapshot.timer.status === 'running' && snapshot.timer.phase === 'focus',

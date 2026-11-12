@@ -25,3 +25,4 @@ jobs:
       - run: npm run test:release-notes
       - run: npm run test:update-install
       - run: npm run test:sounds
+      - run: npm run test:minecraft-music

@@ -1,4 +1,5 @@
 import type { Ambience, Settings } from '../core/model';
+import type { MusicTrack } from '../shared/contracts';
 import { ambientSamples } from './ambient-tracks';
 
 class AudioService {
@@ -13,6 +14,55 @@ class AudioService {
   private previewGeneration = 0;
   private previewListeners = new Set<(kind: Ambience | null) => void>();
   private buffers = new Map<Ambience, AudioBuffer>();
+  private musicTracks: MusicTrack[] = [];
+  private musicIndex = 0;
+  private media: HTMLAudioElement | null = null;
+  private musicError = false;
+  private musicErrorListeners = new Set<(error: boolean) => void>();
+
+  onMusicError(listener: (error: boolean) => void) {
+    this.musicErrorListeners.add(listener);
+    listener(this.musicError);
+    return () => {
+      this.musicErrorListeners.delete(listener);
+    };
+  }
+  private setMusicError(error: boolean) {
+    this.musicError = error;
+    for (const listener of this.musicErrorListeners) listener(error);
+  }
+  setMinecraftTracks(tracks: MusicTrack[]) {
+    if (tracks.map((track) => track.id).join() === this.musicTracks.map((track) => track.id).join())
+      return;
+    this.musicTracks = tracks;
+    this.musicIndex = 0;
+    this.media?.pause();
+    this.media?.removeAttribute('src');
+    this.media?.load();
+    this.setMusicError(false);
+    this.kind = 'none';
+    this.render();
+  }
+  private playMinecraft() {
+    if (!this.musicTracks.length || this.musicError) return;
+    if (!this.media) {
+      this.media = new Audio();
+      this.media.preload = 'auto';
+      this.media.onended = () => {
+        if (this.kind !== 'minecraft') return;
+        this.musicIndex = (this.musicIndex + 1) % this.musicTracks.length;
+        this.media?.removeAttribute('src');
+        this.playMinecraft();
+      };
+      this.media.onerror = () => this.setMusicError(true);
+    }
+    if (!this.media.getAttribute('src'))
+      this.media.src = `pomodoro://app/music/${this.musicTracks[this.musicIndex].id}.ogg`;
+    this.media.volume = this.settings?.ambientVolume ?? 0.15;
+    void this.media.play().catch(() => {
+      if (this.kind === 'minecraft') this.setMusicError(true);
+    });
+  }
 
   onPreview(listener: (kind: Ambience | null) => void) {
     this.previewListeners.add(listener);
@@ -83,8 +133,10 @@ class AudioService {
     if (!ctx) return;
     if (kind === this.kind) {
       this.gain?.gain.setTargetAtTime(settings.ambientVolume * 0.22, ctx.currentTime, 0.12);
+      if (this.media) this.media.volume = settings.ambientVolume;
       return;
     }
+    this.media?.pause();
     const previousSource = this.source;
     const previousGain = this.gain;
     if (previousSource && previousGain) {
@@ -100,6 +152,11 @@ class AudioService {
     this.gain = null;
     this.kind = kind;
     if (kind === 'none') return;
+    if (kind === 'minecraft') {
+      this.setMusicError(false);
+      this.playMinecraft();
+      return;
+    }
     let buffer = this.buffers.get(kind);
     if (!buffer) {
       const sampleRate = 22050;

@@ -5,7 +5,7 @@ import {
   ChevronRight,
   Music2,
   RotateCcw,
-  Settings2,
+  Settings as SettingsIcon,
   SkipForward,
   Volume2,
 } from 'lucide-react';
@@ -46,7 +46,7 @@ export function TimerView({
       <div className="top-tools">
         <div className="tool-stack">
           <IconButton label={t.settings} onClick={() => onOpenSettings()}>
-            <Settings2 size={18} />
+            <SettingsIcon size={18} />
           </IconButton>
           <IconButton label={t.stats} onClick={() => onOpenStats()}>
             <BarChart3 size={18} />

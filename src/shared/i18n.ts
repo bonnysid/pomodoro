@@ -97,6 +97,17 @@ export const messages = {
     brown: 'Коричневый шум',
     lofi: 'LoFi',
     worlds: 'Тихие миры',
+    minecraft: 'Minecraft · оригиналы',
+    minecraftHint:
+      'Оригинальные спокойные треки из установленного Minecraft Java. Если игра в другой папке, выбери её папку assets.',
+    minecraftConnect: 'Подключить музыку Minecraft',
+    minecraftDisconnect: 'Отключить библиотеку',
+    minecraftConnecting: 'Ищем музыку…',
+    minecraftConnected: 'Подключено треков',
+    minecraftLoop: 'плейлист повторяется по кругу',
+    minecraftTrackList: 'Треки плейлиста',
+    minecraftError:
+      'Не удалось прочитать музыку. Запусти Minecraft для загрузки ресурсов или подключи папку assets заново. В браузерной версии подключение недоступно.',
     ambienceHint:
       'Прослушивание — 12 секунд, без смены выбранного фона. По умолчанию фон играет только во время фокуса.',
     originalMusicHint:
@@ -222,6 +233,17 @@ export const messages = {
     brown: 'Brown noise',
     lofi: 'LoFi',
     worlds: 'Quiet worlds',
+    minecraft: 'Minecraft · originals',
+    minecraftHint:
+      'Original calm tracks from your Minecraft Java installation. For a custom installation, select its assets folder.',
+    minecraftConnect: 'Connect Minecraft music',
+    minecraftDisconnect: 'Disconnect library',
+    minecraftConnecting: 'Finding music…',
+    minecraftConnected: 'Connected tracks',
+    minecraftLoop: 'playlist repeats automatically',
+    minecraftTrackList: 'Playlist tracks',
+    minecraftError:
+      'Could not read music. Launch Minecraft to download its assets, or reconnect the assets folder. Connecting is unavailable in the browser preview.',
     ambienceHint:
       'Preview for 12 seconds without changing your selection. By default, ambience plays only during focus.',
     originalMusicHint:

@@ -33,6 +33,7 @@ export function createBrowserClient(): DesktopAPI {
       storageError: service.storageError,
       suspended: service.suspended,
       newDayAvailable: service.newDayAvailable,
+      minecraftTracks: [],
     });
   const emit = () => {
     for (const listener of listeners) listener(snapshot());
@@ -42,6 +43,9 @@ export function createBrowserClient(): DesktopAPI {
   setInterval(() => service.checkpoint(), 5000);
   window.addEventListener('pagehide', () => service.suspend());
   return {
+    music: async () => {
+      throw new Error('Desktop app required');
+    },
     update: async () => snapshot(),
     getSnapshot: async () => snapshot(),
     dispatch: async (action) => {

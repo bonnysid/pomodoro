@@ -1,13 +1,59 @@
+import { createReadStream, statSync } from 'node:fs';
 import path from 'node:path';
+import { Readable } from 'node:stream';
 import { pathToFileURL } from 'node:url';
 import { type BrowserWindow, type IpcMainInvokeEvent, net, protocol, session } from 'electron';
+import type { MinecraftMusic } from './minecraft-music';
 
-export function registerLocalContent(appPath: string) {
+export function registerLocalContent(appPath: string, music: MinecraftMusic) {
   const root = path.resolve(appPath, 'dist');
   protocol.handle('pomodoro', (request) => {
     const url = new URL(request.url);
     if (url.hostname !== 'app' || request.method !== 'GET')
       return new Response('Forbidden', { status: 403 });
+    if (url.pathname.startsWith('/music/')) {
+      const id = /^\/music\/([a-f0-9]{40})\.ogg$/.exec(url.pathname)?.[1];
+      const file = id ? music.file(id) : undefined;
+      if (!file) return new Response('Not found', { status: 404 });
+      try {
+        const size = statSync(file).size;
+        let start = 0,
+          end = size - 1;
+        const range = request.headers.get('range');
+        if (range) {
+          const parts = /^bytes=(\d*)-(\d*)$/.exec(range);
+          if (!parts || (!parts[1] && !parts[2]))
+            return new Response(null, {
+              status: 416,
+              headers: { 'Content-Range': `bytes */${size}` },
+            });
+          start = parts[1] ? Number(parts[1]) : Math.max(0, size - Number(parts[2]));
+          end = parts[1] && parts[2] ? Math.min(Number(parts[2]), size - 1) : size - 1;
+          if (
+            !Number.isSafeInteger(start) ||
+            !Number.isSafeInteger(end) ||
+            start > end ||
+            start >= size
+          )
+            return new Response(null, {
+              status: 416,
+              headers: { 'Content-Range': `bytes */${size}` },
+            });
+        }
+        const headers = new Headers({
+          'Content-Type': 'audio/ogg',
+          'Content-Length': String(end - start + 1),
+          'Accept-Ranges': 'bytes',
+        });
+        if (range) headers.set('Content-Range', `bytes ${start}-${end}/${size}`);
+        return new Response(
+          Readable.toWeb(createReadStream(file, { start, end })) as ReadableStream,
+          { status: range ? 206 : 200, headers },
+        );
+      } catch {
+        return new Response('Not found', { status: 404 });
+      }
+    }
     let decoded: string;
     try {
       decoded = decodeURIComponent(url.pathname);

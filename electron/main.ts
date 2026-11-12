@@ -3,6 +3,7 @@ import { app, Menu, powerMonitor, protocol } from 'electron';
 import { PomodoroService } from '../src/application/pomodoro-service';
 import { channels, type Snapshot } from '../src/shared/contracts';
 import { registerIpc } from './ipc';
+import { MinecraftMusic } from './minecraft-music';
 import { notifyCompletion } from './notifications';
 import { registerLocalContent } from './security';
 import { JsonStateRepository, resolveDataDirectory } from './state-store';
@@ -19,7 +20,7 @@ app.setAppUserModelId('app.pomodoro.desktop');
 protocol.registerSchemesAsPrivileged([
   {
     scheme: 'pomodoro',
-    privileges: { standard: true, secure: true, supportFetchAPI: true },
+    privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true },
   },
 ]);
 let window: AppWindow | undefined;
@@ -36,6 +37,7 @@ const devUrl =
 async function start() {
   const appPath = app.getAppPath();
   const repository = new JsonStateRepository(path.join(app.getPath('userData'), 'state.json'));
+  const music = new MinecraftMusic(path.join(app.getPath('userData'), 'minecraft-music.json'));
   const language = app.getLocale().toLowerCase().startsWith('ru') ? 'ru' : 'en';
   const legacy =
     !process.env.POMODORO_DATA_DIR && !app.isPackaged
@@ -63,6 +65,7 @@ async function start() {
     storageError: controller.storageError,
     suspended: controller.suspended,
     newDayAvailable: controller.newDayAvailable,
+    minecraftTracks: music.summary,
   });
   const broadcast = () => {
     window?.send(channels.state, snapshot());
@@ -79,7 +82,7 @@ async function start() {
     checkpoint: () => controller.checkpoint(),
   });
   window = desktop;
-  registerLocalContent(appPath);
+  registerLocalContent(appPath, music);
   registerIpc({
     service: controller,
     updates,
@@ -87,6 +90,13 @@ async function start() {
     snapshot,
     windowAction: (action) => desktop.action(action),
     devUrl,
+    music,
+    musicDirectory: path.join(
+      process.platform === 'linux' ? app.getPath('home') : app.getPath('appData'),
+      process.platform === 'darwin' ? 'minecraft' : '.minecraft',
+      'assets',
+    ),
+    broadcast,
   });
   controller.onState(broadcast);
   updates.onState(broadcast);

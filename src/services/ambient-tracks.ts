@@ -2,7 +2,10 @@ import type { Ambience } from '../core/model';
 
 // Original procedural compositions; no samples or melodies from third-party recordings.
 // Notes wrap their release tails into the start of the buffer for a continuous loop.
-export function ambientSamples(kind: Exclude<Ambience, 'none'>, sampleRate: number): Float32Array {
+export function ambientSamples(
+  kind: Exclude<Ambience, 'none' | 'minecraft'>,
+  sampleRate: number,
+): Float32Array {
   const musical = kind === 'lofi' || kind === 'worlds';
   const beat = 60 / (kind === 'lofi' ? 76 : 56);
   const duration = musical ? beat * 64 : 4;

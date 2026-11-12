@@ -18,5 +18,6 @@ const api: DesktopAPI = {
   },
   window: (action) => ipcRenderer.invoke('pomodoro:window', action),
   update: (action) => ipcRenderer.invoke('pomodoro:update', action),
+  music: (action) => ipcRenderer.invoke('pomodoro:music', action),
 };
 contextBridge.exposeInMainWorld('pomodoro', api);

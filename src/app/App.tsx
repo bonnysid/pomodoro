@@ -81,7 +81,14 @@ export function App() {
             />
           )}
           {panel === 'stats' && <StatsPanel snapshot={snapshot} t={t} />}
-          {panel === 'sounds' && <SoundsPanel settings={settings} update={update} t={t} />}
+          {panel === 'sounds' && (
+            <SoundsPanel
+              settings={settings}
+              update={update}
+              t={t}
+              minecraftTracks={snapshot.minecraftTracks}
+            />
+          )}
           {(panel === 'resetCycle' || newDay) && (
             <>
               <p className="reset-cycle-description">

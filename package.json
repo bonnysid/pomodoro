@@ -1,7 +1,7 @@
 {
   "name": "pomodoro-desktop",
   "productName": "Pomodoro",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A quiet, bilingual Pomodoro timer for Windows and macOS",
   "author": "Pomodoro",
   "private": true,
@@ -32,7 +32,8 @@
     "test:completion-window": "node scripts/completion-window.mjs",
     "test:release-notes": "node scripts/release-notes.mjs",
     "test:update-install": "node scripts/update-install.mjs",
-    "test:sounds": "node scripts/sounds.mjs"
+    "test:sounds": "node scripts/sounds.mjs",
+    "test:minecraft-music": "node scripts/minecraft-music.mjs"
   },
   "dependencies": {
     "electron-updater": "6.8.9",

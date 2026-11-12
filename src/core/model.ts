@@ -2,7 +2,7 @@ export type Language = 'ru' | 'en';
 export type Theme = 'midnight' | 'paper' | 'sage';
 export type Phase = 'focus' | 'short' | 'long';
 export type TimerStatus = 'idle' | 'running' | 'paused';
-export type Ambience = 'none' | 'white' | 'brown' | 'lofi' | 'worlds';
+export type Ambience = 'none' | 'white' | 'brown' | 'lofi' | 'worlds' | 'minecraft';
 export interface Settings {
   durations: Record<Phase, number>;
   longBreakEvery: number;
@@ -109,7 +109,8 @@ export function normalizeSettings(value: unknown, base = defaultSettings()): Set
       v.ambience === 'white' ||
       v.ambience === 'brown' ||
       v.ambience === 'lofi' ||
-      v.ambience === 'worlds'
+      v.ambience === 'worlds' ||
+      v.ambience === 'minecraft'
         ? v.ambience
         : base.ambience,
   };
