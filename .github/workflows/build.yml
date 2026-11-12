@@ -51,9 +51,13 @@ jobs:
             npm pkg set pomodoroMacUpdates=true --json
           else
             export CSC_IDENTITY_AUTO_DISCOVERY=false
-            npm pkg set build.mac.identity=null build.mac.hardenedRuntime=false --json
+            npm pkg set build.mac.identity=-
+            npm pkg set build.mac.hardenedRuntime=false --json
           fi
           npm run dist:mac
+      - name: Verify macOS signatures and native launch
+        if: runner.os == 'macOS'
+        run: node scripts/verify-mac.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: pomodoro-${{ runner.os }}

@@ -24,3 +24,4 @@ jobs:
       - run: npm run test:completion-window
       - run: npm run test:release-notes
       - run: npm run test:update-install
+      - run: npm run test:sounds

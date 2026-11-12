@@ -1,10 +1,44 @@
-import type { Settings } from '../core/model';
+import type { Ambience, Settings } from '../core/model';
+import { ambientSamples } from './ambient-tracks';
 
 class AudioService {
   private context: AudioContext | null = null;
   private source: AudioBufferSourceNode | null = null;
   private gain: GainNode | null = null;
   private kind = 'none';
+  private settings: Settings | null = null;
+  private playing = false;
+  private previewKind: Exclude<Ambience, 'none'> | null = null;
+  private previewTimer: ReturnType<typeof setTimeout> | undefined;
+  private previewGeneration = 0;
+  private previewListeners = new Set<(kind: Ambience | null) => void>();
+  private buffers = new Map<Ambience, AudioBuffer>();
+
+  onPreview(listener: (kind: Ambience | null) => void) {
+    this.previewListeners.add(listener);
+    listener(this.previewKind);
+    return () => {
+      this.previewListeners.delete(listener);
+    };
+  }
+  async preview(kind: Exclude<Ambience, 'none'>, settings: Settings) {
+    this.stopPreview();
+    const generation = this.previewGeneration;
+    this.settings = settings;
+    this.previewKind = kind;
+    for (const listener of this.previewListeners) listener(kind);
+    await this.unlock();
+    if (generation !== this.previewGeneration) return;
+    this.render();
+    this.previewTimer = setTimeout(() => this.stopPreview(), 12000);
+  }
+  stopPreview() {
+    this.previewGeneration++;
+    clearTimeout(this.previewTimer);
+    this.previewKind = null;
+    for (const listener of this.previewListeners) listener(null);
+    this.render();
+  }
 
   async unlock() {
     try {
@@ -36,33 +70,50 @@ class AudioService {
     });
   }
   ambience(settings: Settings, playing: boolean) {
+    this.settings = settings;
+    this.playing = playing;
+    this.render();
+  }
+  private render() {
+    const settings = this.settings;
+    if (!settings) return;
     const ctx = this.context,
-      kind = playing ? settings.ambience : 'none';
+      kind =
+        this.previewKind ?? (this.playing || settings.ambientAlways ? settings.ambience : 'none');
     if (!ctx) return;
     if (kind === this.kind) {
       this.gain?.gain.setTargetAtTime(settings.ambientVolume * 0.22, ctx.currentTime, 0.12);
       return;
     }
-    this.source?.stop();
-    this.source?.disconnect();
-    this.gain?.disconnect();
+    const previousSource = this.source;
+    const previousGain = this.gain;
+    if (previousSource && previousGain) {
+      previousGain.gain.cancelAndHoldAtTime(ctx.currentTime);
+      previousGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.08);
+      previousSource.stop(ctx.currentTime + 0.09);
+      previousSource.onended = () => {
+        previousSource.disconnect();
+        previousGain.disconnect();
+      };
+    }
     this.source = null;
     this.gain = null;
     this.kind = kind;
     if (kind === 'none') return;
-    const buffer = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate),
-      samples = buffer.getChannelData(0);
-    let brown = 0;
-    for (let i = 0; i < samples.length; i++) {
-      const white = Math.random() * 2 - 1;
-      brown = (brown + 0.02 * white) / 1.02;
-      samples[i] = kind === 'brown' ? brown * 3.5 : white;
+    let buffer = this.buffers.get(kind);
+    if (!buffer) {
+      const sampleRate = 22050;
+      const samples = ambientSamples(kind, sampleRate);
+      buffer = ctx.createBuffer(1, samples.length, sampleRate);
+      buffer.getChannelData(0).set(samples);
+      this.buffers.set(kind, buffer);
     }
     this.source = ctx.createBufferSource();
     this.source.buffer = buffer;
     this.source.loop = true;
     this.gain = ctx.createGain();
-    this.gain.gain.value = settings.ambientVolume * 0.22;
+    this.gain.gain.setValueAtTime(0, ctx.currentTime);
+    this.gain.gain.linearRampToValueAtTime(settings.ambientVolume * 0.22, ctx.currentTime + 0.1);
     this.source.connect(this.gain).connect(ctx.destination);
     this.source.start();
   }

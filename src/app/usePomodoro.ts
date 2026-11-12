@@ -37,6 +37,11 @@ export function usePomodoro() {
         if (alive) setError(true);
       });
     checkDay();
+    void audio.unlock().then(() => {
+      const s = latest.current;
+      if (alive && s)
+        audio.ambience(s.settings, s.timer.status === 'running' && s.timer.phase === 'focus');
+    });
     window.addEventListener('focus', checkDay);
     document.addEventListener('visibilitychange', checkDay);
     const offComplete = api.onComplete(() => {

@@ -2,6 +2,7 @@ export type Language = 'ru' | 'en';
 export type Theme = 'midnight' | 'paper' | 'sage';
 export type Phase = 'focus' | 'short' | 'long';
 export type TimerStatus = 'idle' | 'running' | 'paused';
+export type Ambience = 'none' | 'white' | 'brown' | 'lofi' | 'worlds';
 export interface Settings {
   durations: Record<Phase, number>;
   longBreakEvery: number;
@@ -15,8 +16,9 @@ export interface Settings {
   minimizeToTray: boolean;
   alwaysOnTop: boolean;
   showOnCompletion: boolean;
-  ambience: 'none' | 'white' | 'brown';
+  ambience: Ambience;
   ambientVolume: number;
+  ambientAlways: boolean;
 }
 export interface TimerState {
   phase: Phase;
@@ -74,6 +76,7 @@ export function defaultSettings(language: Language = 'ru'): Settings {
     showOnCompletion: true,
     ambience: 'none',
     ambientVolume: 0.15,
+    ambientAlways: false,
   };
 }
 export function normalizeSettings(value: unknown, base = defaultSettings()): Settings {
@@ -100,8 +103,13 @@ export function normalizeSettings(value: unknown, base = defaultSettings()): Set
     showOnCompletion: bool('showOnCompletion'),
     volume: numberIn(v.volume, base.volume, 0, 1),
     ambientVolume: numberIn(v.ambientVolume, base.ambientVolume, 0, 1),
+    ambientAlways: bool('ambientAlways'),
     ambience:
-      v.ambience === 'none' || v.ambience === 'white' || v.ambience === 'brown'
+      v.ambience === 'none' ||
+      v.ambience === 'white' ||
+      v.ambience === 'brown' ||
+      v.ambience === 'lofi' ||
+      v.ambience === 'worlds'
         ? v.ambience
         : base.ambience,
   };

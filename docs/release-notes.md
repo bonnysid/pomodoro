@@ -1,11 +1,9 @@
-Pomodoro 0.2.6
+Pomodoro 0.3.0
 
-• Windows: новые версии скачиваются в фоне. Продолжай работать и нажми «Перезапустить и обновить», когда будет удобно.
-• Обновление устанавливается без мастера и кнопок «Далее», после чего приложение открывается снова.
-• Перед установкой сохраняются настройки и статистика. Работающий таймер нужно поставить на паузу.
-• Раздел «Что нового» отображается без HTML-тегов (исправлено в 0.2.5).
+• Добавлены LoFi и «Тихие миры» — оригинальная спокойная музыка в духе Minecraft. Все звуки работают без интернета; записи из игры не используются.
+• У каждого фонового звука есть прослушивание на 12 секунд без смены выбранного фона.
+• Переключатель «Играть и без таймера» разрешает музыку до старта, на паузе и в перерывах.
+• Громкость фона можно менять прямо на главном экране. Выбор музыки и настройки сохраняются.
+• macOS: добавлена техническая подпись вместо полного отключения подписи. Перед публикацией проверяются подписи arm64/x64 и нативный запуск. Без Developer ID и нотарификации macOS всё ещё может предупреждать о неизвестном разработчике; обновление на Mac пока вручную.
 
-При переходе с 0.2.5 или старше мастер появится ещё один раз — его запускает старая версия. Следующие обновления из 0.2.6 будут тихими.
-macOS: текущая сборка без подписи Apple, обновление вручную.
-
-English: Updates download in the background on Windows. Choose “Restart and update” to install silently and reopen the app. Pause the timer first; settings and statistics are saved. Updating from 0.2.5 or earlier still shows the old setup wizard once. Subsequent updates from 0.2.6 use silent installation.
+English: Added original offline LoFi and Quiet worlds music, 12-second previews, playback outside focus, and a main-screen volume slider. macOS builds now use ad-hoc signatures with signature/native-launch checks; Developer ID notarization is still required for trusted distribution without Gatekeeper warnings.

@@ -15,6 +15,40 @@
   color: var(--muted);
   font-size: 13px;
 }
+.sound-option {
+  display: flex;
+  gap: 6px;
+}
+.sound-option > button:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.sound-options .sound-preview {
+  justify-content: center;
+  width: 40px;
+  flex-shrink: 0;
+}
+.sound-preview:hover,
+.sound-preview[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--raised);
+}
+.quick-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+.quick-volume input {
+  width: 90px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.quick-volume span {
+  width: 30px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
 .sound-options button > span:first-child {
   display: flex;
   align-items: center;

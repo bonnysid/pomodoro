@@ -7,6 +7,7 @@ import {
   RotateCcw,
   Settings2,
   SkipForward,
+  Volume2,
 } from 'lucide-react';
 import { type Action, formatTime, type Phase, type Settings } from '../../core/model';
 import type { Snapshot } from '../../shared/contracts';
@@ -184,7 +185,23 @@ export function TimerView({
           {settings.durations.long}
           <ChevronRight size={12} />
         </button>
-        <span>{t.keyHint}</span>
+        {settings.ambience !== 'none' ? (
+          <label className="quick-volume" title={t.ambientVolume}>
+            <Volume2 size={14} aria-hidden="true" />
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              aria-label={t.ambientVolume}
+              value={settings.ambientVolume}
+              onChange={(event) => update({ ambientVolume: Number(event.target.value) })}
+            />
+            <span>{Math.round(settings.ambientVolume * 100)}%</span>
+          </label>
+        ) : (
+          <span>{t.keyHint}</span>
+        )}
       </footer>
     </div>
   );

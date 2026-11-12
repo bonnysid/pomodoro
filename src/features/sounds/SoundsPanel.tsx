@@ -1,5 +1,6 @@
-import { Moon, Music2, Volume2 } from 'lucide-react';
-import type { Settings } from '../../core/model';
+import { Moon, Music2, Play, Square, Volume2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import type { Ambience, Settings } from '../../core/model';
 import { audio } from '../../services/audio';
 import type { Messages } from '../../shared/i18n';
 import { Toggle } from '../../shared/ui/Toggle';
@@ -14,26 +15,58 @@ export function SoundsPanel({
   update: UpdateSettings;
   t: Messages;
 }) {
+  const [preview, setPreview] = useState<Ambience | null>(null);
+  useEffect(() => {
+    const unsubscribe = audio.onPreview(setPreview);
+    return () => {
+      unsubscribe();
+      audio.stopPreview();
+    };
+  }, []);
   return (
     <>
       <div className="sound-options">
-        {(['none', 'white', 'brown'] as const).map((kind) => (
-          <button
-            type="button"
-            key={kind}
-            className={settings.ambience === kind ? 'selected' : ''}
-            aria-pressed={settings.ambience === kind}
-            onClick={() => update({ ambience: kind })}
-          >
-            <span>
-              {kind === 'none' ? <Moon size={18} /> : <Music2 size={18} />}
-              {kind === 'none' ? t.noSound : t[kind]}
-            </span>
-            <span className="radio-mark">{settings.ambience === kind && <span />}</span>
-          </button>
+        {(['none', 'white', 'brown', 'lofi', 'worlds'] as const).map((kind) => (
+          <div className="sound-option" key={kind}>
+            <button
+              type="button"
+              className={settings.ambience === kind ? 'selected' : ''}
+              aria-pressed={settings.ambience === kind}
+              onClick={() => {
+                audio.stopPreview();
+                update({ ambience: kind });
+              }}
+            >
+              <span>
+                {kind === 'none' ? <Moon size={18} /> : <Music2 size={18} />}
+                {kind === 'none' ? t.noSound : t[kind]}
+              </span>
+              <span className="radio-mark">{settings.ambience === kind && <span />}</span>
+            </button>
+            {kind !== 'none' && (
+              <button
+                type="button"
+                className="sound-preview"
+                aria-label={`${preview === kind ? t.stopPreview : t.previewAmbience}: ${t[kind]}`}
+                aria-pressed={preview === kind}
+                onClick={() => {
+                  if (preview === kind) audio.stopPreview();
+                  else void audio.preview(kind, settings);
+                }}
+              >
+                {preview === kind ? <Square size={15} /> : <Play size={15} />}
+              </button>
+            )}
+          </div>
         ))}
       </div>
       <p className="field-hint">{t.ambienceHint}</p>
+      <p className="field-hint">{t.originalMusicHint}</p>
+      <Toggle
+        label={t.ambientAlways}
+        checked={settings.ambientAlways}
+        onChange={(value) => update({ ambientAlways: value })}
+      />
       <label className="range-field">
         <span>
           {t.volume}
