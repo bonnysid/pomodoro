@@ -30,6 +30,7 @@ const custom = {
   showOnCompletion: false,
   ambience: 'brown',
   ambientVolume: 0.23,
+  ambientAlways: false,
 };
 const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const write = (file, state) => {
